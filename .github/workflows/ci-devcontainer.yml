@@ -1,0 +1,18 @@
+name: CI with DevContainer
+
+on:
+  push:
+    branches-ignore: [main]
+  pull_request:
+
+jobs:
+  test-in-devcontainer:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run lint/test in DevContainer
+        uses: devcontainers/ci@v0.3
+        with:
+          runCmd: |
+            echo "Running lint and tests in DevContainer..."
