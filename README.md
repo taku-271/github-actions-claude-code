@@ -22,7 +22,10 @@ IssueやPull Requestのコメントで `@claude` をメンションすると、C
 
 ### 必要な設定
 
-1. `CLAUDE_CODE_OAUTH_TOKEN` をリポジトリのSecretsに設定してください。
+利用する認証方法に応じて、以下のいずれかをリポジトリのSecretsに設定してください。
+
+- **APIキー認証**: `ANTHROPIC_API_KEY`（Anthropic Consoleで発行したAPIキー）
+- **OAuthトークン認証（Pro/Maxサブスクリプション）**: `CLAUDE_CODE_OAUTH_TOKEN`（ローカルで `claude setup-token` を実行して生成したトークン）
 
 ### ワークフロー
 
