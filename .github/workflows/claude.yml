@@ -32,3 +32,7 @@ jobs:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
           model: claude-sonnet-4-6
+          prompt: |
+            After completing your changes, create a pull request using the gh CLI:
+            gh pr create --title "<title>" --body "<description>" --base main
+            Make sure to push your branch first before creating the PR.
