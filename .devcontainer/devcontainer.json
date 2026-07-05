@@ -1,0 +1,12 @@
+{
+  "name": "github-actions-claude-code",
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu-24.04",
+  "features": {
+    "ghcr.io/devcontainers/features/github-cli:1": {},
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "lts"
+    }
+  },
+  "postCreateCommand": "echo 'DevContainer ready'",
+  "remoteUser": "vscode"
+}
