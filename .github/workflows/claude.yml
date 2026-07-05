@@ -10,10 +10,6 @@ on:
 
 jobs:
   claude:
-    if: |
-      (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@claude')) ||
-      (github.event_name == 'pull_request_review_comment' && contains(github.event.comment.body, '@claude')) ||
-      (github.event_name == 'pull_request_review' && contains(github.event.review.body, '@claude'))
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -21,12 +17,51 @@ jobs:
       issues: write
       id-token: write
     steps:
+      - name: Check if Claude should respond
+        id: check
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          EVENT_NAME: ${{ github.event_name }}
+          COMMENT_BODY: ${{ github.event.comment.body }}
+          REVIEW_BODY: ${{ github.event.review.body }}
+          PR_HEAD_REF: ${{ github.event.pull_request.head.ref }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          REPO: ${{ github.repository }}
+        run: |
+          SHOULD_RUN=false
+
+          if [[ "$EVENT_NAME" == "pull_request_review_comment" ]]; then
+            if [[ "$COMMENT_BODY" == *"@claude"* ]] || [[ "$PR_HEAD_REF" == claude/* ]]; then
+              SHOULD_RUN=true
+            fi
+
+          elif [[ "$EVENT_NAME" == "pull_request_review" ]]; then
+            if [[ "$REVIEW_BODY" == *"@claude"* ]] || [[ "$PR_HEAD_REF" == claude/* ]]; then
+              SHOULD_RUN=true
+            fi
+
+          elif [[ "$EVENT_NAME" == "issue_comment" ]]; then
+            if [[ "$COMMENT_BODY" == *"@claude"* ]]; then
+              SHOULD_RUN=true
+            else
+              # Check if the comment is on a Claude-created PR
+              BRANCH=$(gh api "repos/$REPO/pulls/$ISSUE_NUMBER" --jq '.head.ref' 2>/dev/null || echo "")
+              if [[ "$BRANCH" == claude/* ]]; then
+                SHOULD_RUN=true
+              fi
+            fi
+          fi
+
+          echo "should_run=$SHOULD_RUN" >> $GITHUB_OUTPUT
+
       - name: Checkout repository
+        if: steps.check.outputs.should_run == 'true'
         uses: actions/checkout@v4
         with:
           fetch-depth: 1
 
       - name: Run Claude Code
+        if: steps.check.outputs.should_run == 'true'
         uses: anthropics/claude-code-action@beta
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
