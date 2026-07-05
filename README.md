@@ -26,6 +26,7 @@ IssueやPull Requestのコメントで `@claude` をメンションすると、C
 
 | イベント | 条件 |
 |---------|------|
+| Issueの作成・アサイン | `@claude` を含む場合 |
 | Issueへのコメント | `@claude` を含む場合 |
 | PRへのコメント | `@claude` を含む場合、またはClaudeが作成したブランチ（`claude/*`）の場合 |
 | PRレビューの送信 | `@claude` を含む場合、またはClaudeが作成したブランチの場合 |
@@ -57,10 +58,11 @@ claude setup-token
 
 ```yaml
 permissions:
-  contents: write
-  pull-requests: write
-  issues: write
+  contents: read
+  pull-requests: read
+  issues: read
   id-token: write
+  actions: read
 ```
 
 ## 動作の仕組み
